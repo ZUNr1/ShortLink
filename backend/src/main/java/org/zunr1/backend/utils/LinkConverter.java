@@ -5,7 +5,7 @@ import org.zunr1.backend.entity.Link;
 
 public class LinkConverter {
     public static LinkResponse convertFromLink(Link link){
-        LinkResponse linkResponse = LinkResponse.builder()
+        return LinkResponse.builder()
                 .id(link.getId())
                 .name(link.getName())
                 .longUrl(link.getLongUrl())
@@ -15,7 +15,6 @@ public class LinkConverter {
                 .createdAt(link.getCreatedAt())
                 .updatedAt(link.getUpdatedAt())
                 .build();
-        return linkResponse;
     }
     public static Link convertFromLinkResponse(LinkResponse response){
         return null;

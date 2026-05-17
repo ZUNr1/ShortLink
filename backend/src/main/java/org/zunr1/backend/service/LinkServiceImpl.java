@@ -26,7 +26,7 @@ public class LinkServiceImpl implements LinkService{
         }
         Link link = linkMapper.selectLinkByShortCode(shortCode);
         if (link != null){
-            link.setClickCount(link.getClickCount() + 1);
+            link.setClickCount(link.getClickCount() + 1);//todo异步处理
             linkMapper.updateClickCount(link.getClickCount(), link.getId());
             return link.getLongUrl();
         }
