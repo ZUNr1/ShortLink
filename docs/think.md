@@ -1,0 +1,3 @@
+service层尽量不要返回null，而是Result统一包装，不要让controller写太多防御代码
+service层也不要给controller看直接的实体类（密码这些信息不能暴露，也不用controller管暴露什么），而是包装好
+service层不应该处理result和responseEntity

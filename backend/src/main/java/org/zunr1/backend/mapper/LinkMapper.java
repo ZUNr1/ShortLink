@@ -21,4 +21,7 @@ public interface LinkMapper {
     @Insert("INSERT INTO link (user_id, long_url, short_code, expire_at) VALUES (#{userId},#{longUrl},#{shortCode},#{expireAt})")
     @Options(useGeneratedKeys = true,keyProperty = "id",keyColumn = "id")
     int insertLink(Link link);
+
+    @Update("UPDATE link SET click_count = #{clickCount} WHERE id = #{id}")
+    int updateClickCount(@Param("clickCount") Long clickCount , @Param("id") Long id);
 }

@@ -1,13 +1,19 @@
-package org.zunr1.backend.entity;
+package org.zunr1.backend.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.zunr1.backend.entity.Link;
 
 import java.time.LocalDateTime;
 
 @Data
-public class Link {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class LinkResponse {
     private Long id;
-    private Integer userId;
     private String name;
     private String longUrl;
     private String shortCode;
@@ -15,4 +21,9 @@ public class Link {
     private LocalDateTime expireAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    private String message;
+    private boolean existing;
+
+
 }

@@ -1,6 +1,7 @@
 create table link (
                       id bigint primary key auto_increment comment 'id主键',
                       user_id int comment '关联用户，未登录为null',
+                      name varchar(128) default null comment '短链名称，用户自定义',
                       long_url varchar(2048) not null comment '长链接',
                       short_code varchar(32) not null comment '短码（如 abc123）',
                       click_count bigint default 0 comment '点击次数',
