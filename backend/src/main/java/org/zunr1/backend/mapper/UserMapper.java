@@ -18,14 +18,14 @@ public interface UserMapper {
     User selectByName(@Param("name") String name);
     @Select("select * from user where email = #{email}")
     User selectByEmail(@Param("email") String email);
-    @Select("select password,salt from user where name = #{name}")
-    PasswordVO selectPasswordSalt(@Param("name") String name);
-    @Insert("insert into user(name, email, password, salt, status,created_at) " +
-            "values (#{name}, #{email}, #{password}, #{salt}, #{status}, NOW())")
+    @Select("select password from user where id = #{id}")
+    String selectPassword(@Param("id") Long id);
+    @Insert("insert into user(name, email, password, role, status,created_at) " +
+            "values (#{name}, #{email}, #{password}, #{role}, #{status}, NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insertUser(User user);
-    @Update("update user set password = #{password}, salt = #{salt} where id = #{id}")
-    int updateUserPasswordSalt(@Param("id") Long id, @Param("password") String password, @Param("salt") String salt);
+    @Update("update user set password = #{password} where id = #{id}")
+    int updateUserPassword(@Param("id") Long id, @Param("password") String password);
     @Delete("update user set user.status = 0 where id = #{id}")
     int deleteUser(@Param("id") Long id);
     @Select("select status from user where id = #{id}")

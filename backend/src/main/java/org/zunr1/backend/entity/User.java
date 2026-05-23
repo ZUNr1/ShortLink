@@ -10,7 +10,6 @@ public class User {
     private String name;
     private String email;
     private String password;
-    private String salt;
     private Integer role;
     private Integer status;
     private LocalDateTime createdAt;

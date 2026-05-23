@@ -21,4 +21,9 @@ public class GlobalExceptionHandler {
         e.printStackTrace(); // 记录日志
         return ResponseEntity.status(500).body(Result.error(500, "系统内部错误"));
     }
+
+    @ExceptionHandler(TokenErrorException.class)
+    public ResponseEntity<Result<Void>> handleTokenError(TokenErrorException e) {
+        return ResponseEntity.status(401).body(Result.error(401, e.getMessage()));
+    }
 }

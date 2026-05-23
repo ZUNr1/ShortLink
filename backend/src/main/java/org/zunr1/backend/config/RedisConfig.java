@@ -1,4 +1,4 @@
-package org.zunr1.backend.utils;
+package org.zunr1.backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

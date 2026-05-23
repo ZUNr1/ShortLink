@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/link")
+@RequestMapping("/api/link")
 public class LinkController {
     @Autowired
     private LinkService linkService;
