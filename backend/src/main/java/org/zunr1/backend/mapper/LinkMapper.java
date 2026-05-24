@@ -22,7 +22,9 @@ public interface LinkMapper {
             "VALUES (#{userId}, #{name}, #{longUrl}, #{shortCode}, #{expireAt}, 0, NOW(), NOW())")
     @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     int insertLink(Link link);
-
     @Update("UPDATE link SET click_count = #{clickCount} WHERE id = #{id}")
     int updateClickCount(@Param("clickCount") Long clickCount , @Param("id") Long id);
+    // LinkMapper.java 中添加
+    @Update("UPDATE link SET short_code = #{shortCode} WHERE id = #{id}")
+    int updateShortCode(@Param("id") Long id, @Param("shortCode") String shortCode);
 }
