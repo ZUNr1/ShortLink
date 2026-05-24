@@ -12,14 +12,15 @@ import org.zunr1.backend.mapper.LinkMapper;
 import org.zunr1.backend.utils.LinkConverter;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.UUID;
 
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class LinkServiceImpl implements LinkService{
     @Autowired
     private LinkMapper linkMapper;
     @Override
-    @Transactional
     public String getLongUrl(String shortCode) {
         if (shortCode == null || shortCode.isEmpty()){
             return null;
@@ -52,8 +53,7 @@ public class LinkServiceImpl implements LinkService{
     }
 
     @Override
-    @Transactional
-    public String switchUrl(String longUrl,String name,String expireAt,Integer userId) {
+    public String switchUrl(String longUrl,String name,String expireAt,Long userId) {
 
 
         Link existing = linkMapper.selectLinkByLongUrl(longUrl);
@@ -65,7 +65,11 @@ public class LinkServiceImpl implements LinkService{
         link.setName(name);
         link.setUserId(userId);
         link.setShortCode(UUID.randomUUID().toString().replace("-",""));//todo
-        link.setExpireAt(LocalDateTime.parse(expireAt));
+        try {
+            link.setExpireAt(LocalDateTime.parse(expireAt));
+        } catch (DateTimeParseException e) {
+            throw new BadRequestException("过期时间格式错误，请使用 yyyy-MM-dd'T'HH:mm:ss");
+        }
         linkMapper.insertLink(link);
         return link.getShortCode();
     }

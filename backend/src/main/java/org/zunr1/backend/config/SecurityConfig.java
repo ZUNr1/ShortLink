@@ -15,8 +15,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 //上面是强制无状态，不会创建HttpSession，完全依赖Token认证
                 .authorizeHttpRequests(auth->auth
-                        .requestMatchers("api/**").authenticated()//api接口需要认证
-                        .requestMatchers("admin/**").hasAuthority("SCOPE_ADMIN")//admin接口需要SCOPE_ADMIN权限
+                        .requestMatchers("/login").permitAll()//登录接口允许匿名访问
+                        .requestMatchers("/api/**").authenticated()//api接口需要认证
+                        .requestMatchers("/admin/**").hasAuthority("SCOPE_ADMIN")//admin接口需要SCOPE_ADMIN权限
                         .anyRequest().permitAll()//其他接口允许匿名访问
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> {}));

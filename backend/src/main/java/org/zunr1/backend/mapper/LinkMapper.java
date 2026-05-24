@@ -13,7 +13,7 @@ public interface LinkMapper {
     Link selectLinkByShortCode(@Param("shortCode") String shortCode);
 
     @Select("SELECT * FROM link where user_id = #{userId}")
-    List<Link> selectLinksByUserId(@Param("userId") Integer userId);
+    List<Link> selectLinksByUserId(@Param("userId") Long userId);
 
     @Select("SELECT * FROM link WHERE long_url = #{longUrl}")
     Link selectLinkByLongUrl(@Param("longUrl") String longUrl);

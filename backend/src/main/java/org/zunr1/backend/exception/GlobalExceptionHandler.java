@@ -9,7 +9,7 @@ import org.zunr1.backend.dto.Result;
 public class GlobalExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Result<Void>> handleNotFound(NotFoundException e){
-        return ResponseEntity.status(404).body(Result.error(400, e.getMessage()));
+        return ResponseEntity.status(404).body(Result.error(404, e.getMessage()));
     }
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<Result<Void>> handleBadRequest(BadRequestException e) {

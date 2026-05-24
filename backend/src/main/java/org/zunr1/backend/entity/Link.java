@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Data
 public class Link {
     private Long id;
-    private Integer userId;
+    private Long userId;
     private String name;
     private String longUrl;
     private String shortCode;

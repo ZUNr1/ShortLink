@@ -1,9 +1,11 @@
 package org.zunr1.backend.controller;
 
+import org.springframework.security.oauth2.jwt.Jwt;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.zunr1.backend.dto.LinkResponse;
 import org.zunr1.backend.dto.Result;
@@ -36,7 +38,8 @@ public class LinkController {
     }
 
     @PostMapping("/switch")
-    public ResponseEntity<Result<String>> switchUrl(@RequestBody Map<String,String> body){
+    public ResponseEntity<Result<String>> switchUrl(@RequestBody Map<String,String> body,
+                                                    @AuthenticationPrincipal Jwt jwt){
         String url = body.get("url");
         if (url == null || url.isEmpty()) {
             return ResponseEntity.badRequest().body(Result.error(400, "url为空"));
@@ -46,8 +49,10 @@ public class LinkController {
             return ResponseEntity.badRequest().body(Result.error(400,"name为空"));
         }
         String expireAt = body.get("expire");//yyyy-MM-dd'T'HH:mm:ss
-        //todo,user从jwt获取
-        Integer userId = null;
+
+        //从jwt中获取userId
+        Long userId = jwt.getClaim("id");
+
         String shortCode = linkService.switchUrl(url,name,expireAt,userId);
         return ResponseEntity.ok(Result.success(shortCode));
     }
