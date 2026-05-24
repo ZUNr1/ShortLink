@@ -18,8 +18,9 @@ public interface LinkMapper {
     @Select("SELECT * FROM link WHERE long_url = #{longUrl}")
     Link selectLinkByLongUrl(@Param("longUrl") String longUrl);
 
-    @Insert("INSERT INTO link (user_id, long_url, short_code, expire_at) VALUES (#{userId},#{longUrl},#{shortCode},#{expireAt})")
-    @Options(useGeneratedKeys = true,keyProperty = "id",keyColumn = "id")
+    @Insert("INSERT INTO link (user_id, name, long_url, short_code, expire_at, click_count, created_at, updated_at) " +
+            "VALUES (#{userId}, #{name}, #{longUrl}, #{shortCode}, #{expireAt}, 0, NOW(), NOW())")
+    @Options(useGeneratedKeys = true, keyProperty = "id", keyColumn = "id")
     int insertLink(Link link);
 
     @Update("UPDATE link SET click_count = #{clickCount} WHERE id = #{id}")

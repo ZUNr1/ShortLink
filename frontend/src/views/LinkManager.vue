@@ -46,6 +46,54 @@
       </el-form>
     </el-card>
 
+    <!-- 我的短链列表 -->
+    <el-card class="list-card" shadow="hover">
+      <template #header>
+        <div class="card-header">
+          <span>我的短链列表</span>
+          <el-button type="primary" link @click="loadUserLinks" :loading="listLoading">
+            <el-icon><Refresh /></el-icon>
+            刷新
+          </el-button>
+        </div>
+      </template>
+
+      <el-table :data="linkList" stripe v-loading="listLoading" style="width: 100%">
+        <el-table-column prop="name" label="名称" width="150" />
+        <el-table-column prop="shortCode" label="短码" width="280">
+          <template #default="{ row }">
+            <el-tag>{{ row.shortCode }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="longUrl" label="长链接" min-width="250" show-overflow-tooltip />
+        <el-table-column prop="clickCount" label="点击次数" width="100" align="center">
+          <template #default="{ row }">
+            <span class="click-count">{{ row.clickCount }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="expireAt" label="过期时间" width="180">
+          <template #default="{ row }">
+            <span :class="{ 'expired': row.expireAt && new Date(row.expireAt) < new Date() }">
+              {{ formatExpireTime(row.expireAt) }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="createdAt" label="创建时间" width="160">
+          <template #default="{ row }">
+            {{ formatDate(row.createdAt) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="180" fixed="right">
+          <template #default="{ row }">
+            <el-button type="primary" link @click="copyShortLink(row)">
+              <el-icon><CopyDocument /></el-icon>
+              复制链接
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
+
     <!-- 查询短链卡片 -->
     <el-card class="query-card" shadow="hover">
       <template #header>
@@ -117,17 +165,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
-import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-import { CopyDocument } from '@element-plus/icons-vue'
-import { linkApi } from '@/api/link'
-import type { LinkResponse } from '@/types'
+import {ref, reactive, onMounted, computed} from 'vue'
+import {ElMessage, type FormInstance, type FormRules} from 'element-plus'
+import { CopyDocument, Refresh } from '@element-plus/icons-vue'
+import type {LinkResponse} from "../types";
+import {linkApi} from "../api/link.ts";
+
+
 
 const formRef = ref<FormInstance>()
 const createLoading = ref(false)
 const queryLoading = ref(false)
 const shortCode = ref('')
 const linkDetail = ref<LinkResponse | null>(null)
+
+// 列表相关
+const linkList = ref<LinkResponse[]>([])
+const listLoading = ref(false)
 
 const form = reactive({
   url: '',
@@ -156,7 +210,8 @@ const disabledDate = (time: Date) => {
 
 const shortUrl = computed(() => {
   if (!linkDetail.value) return ''
-  return `${window.location.origin}/api/link/${linkDetail.value.shortCode}`
+  const backendUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+  return `${backendUrl}/api/link/${linkDetail.value.shortCode}`
 })
 
 const isExpired = computed(() => {
@@ -171,8 +226,33 @@ const formatDate = (date: string) => {
 
 const formatExpireTime = (expireAt: string | null) => {
   if (!expireAt) return '永久有效'
-  if (isExpired.value) return `已过期 ${formatDate(expireAt)}`
+  if (new Date(expireAt) < new Date()) return `已过期 ${formatDate(expireAt)}`
   return formatDate(expireAt)
+}
+
+// 加载用户所有短链
+const loadUserLinks = async () => {
+  listLoading.value = true
+  try {
+    const res = await linkApi.getUserLinks()
+    linkList.value = res
+  } catch (error) {
+    console.error('加载列表失败', error)
+  } finally {
+    listLoading.value = false
+  }
+}
+
+// 复制短链接
+const copyShortLink = async (link: LinkResponse) => {
+  const backendUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
+  const shortUrl = `${backendUrl}/api/link/${link.shortCode}`
+  try {
+    await navigator.clipboard.writeText(shortUrl)
+    ElMessage.success('复制成功')
+  } catch {
+    ElMessage.error('复制失败')
+  }
 }
 
 const handleCreate = async () => {
@@ -189,7 +269,12 @@ const handleCreate = async () => {
         })
         shortCode.value = res
         await handleQuery()
+        await loadUserLinks()  // 创建成功后刷新列表
         ElMessage.success('短链生成成功')
+        // 清空表单
+        form.url = ''
+        form.name = ''
+        form.expire = ''
       } catch (error) {
         // 错误已在拦截器中处理
       } finally {
@@ -224,6 +309,11 @@ const copyShortUrl = async () => {
     ElMessage.error('复制失败')
   }
 }
+
+// 页面加载时获取列表
+onMounted(() => {
+  loadUserLinks()
+})
 </script>
 
 <style scoped>
@@ -234,7 +324,8 @@ const copyShortUrl = async () => {
 
 .create-card,
 .query-card,
-.detail-card {
+.detail-card,
+.list-card {
   margin-bottom: 24px;
 }
 

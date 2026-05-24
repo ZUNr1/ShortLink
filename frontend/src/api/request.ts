@@ -37,9 +37,25 @@ request.interceptors.response.use(
             return Promise.reject(new Error(res.message))
         }
     },
+// 响应拦截器 - 在 catch 部分添加
     (error) => {
-        console.error('Request Error:', error)
-        ElMessage.error(error.message || '网络错误')
+        console.error('Request Error Details:', {
+            url: error.config?.url,
+            method: error.config?.method,
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            data: error.response?.data
+        })
+
+        if (error.response?.status === 401) {
+            ElMessage.error('请先登录')
+            localStorage.clear()
+            window.location.href = '/login'
+        } else if (error.code === 'ERR_NETWORK') {
+            ElMessage.error('网络错误，请检查后端服务是否启动（http://localhost:8080）')
+        } else {
+            ElMessage.error(error.response?.data?.message || error.message || '请求失败')
+        }
         return Promise.reject(error)
     }
 )

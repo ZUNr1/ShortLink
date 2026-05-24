@@ -11,5 +11,10 @@ export const linkApi = {
     // 创建或获取短链
     switchUrl(data: SwitchUrlRequest): Promise<string> {
         return request.post('/api/link/switch', data)
+    },
+
+    // 获取用户所有短链
+    getUserLinks(): Promise<LinkResponse[]> {
+        return request.get('/api/link/list')
     }
 }

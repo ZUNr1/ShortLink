@@ -34,18 +34,17 @@ const router = createRouter({
     routes
 })
 
-// 路由守卫
-router.beforeEach((to, _from, next) => {
+// 路由守卫 - 不使用 next 回调
+router.beforeEach((to, _from) => {
     const token = localStorage.getItem('accessToken')
     const requiresAuth = to.meta.requiresAuth !== false
 
     if (requiresAuth && !token) {
-        next('/login')
+        return '/login'
     } else if ((to.path === '/login' || to.path === '/register') && token) {
-        next('/')
-    } else {
-        next()
+        return '/'
     }
+    return true
 })
 
 export default router

@@ -13,6 +13,7 @@ import org.zunr1.backend.utils.LinkConverter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -65,12 +66,25 @@ public class LinkServiceImpl implements LinkService{
         link.setName(name);
         link.setUserId(userId);
         link.setShortCode(UUID.randomUUID().toString().replace("-",""));//todo
-        try {
-            link.setExpireAt(LocalDateTime.parse(expireAt));
-        } catch (DateTimeParseException e) {
-            throw new BadRequestException("过期时间格式错误，请使用 yyyy-MM-dd'T'HH:mm:ss");
+        // 处理过期时间 - 如果为空则设为null
+        if (expireAt != null && !expireAt.isEmpty()) {
+            try {
+                link.setExpireAt(LocalDateTime.parse(expireAt));
+            } catch (DateTimeParseException e) {
+                throw new BadRequestException("过期时间格式错误，请使用 yyyy-MM-dd'T'HH:mm:ss");
+            }
         }
+        // 如果 expireAt 为空，expireAt 保持 null
+
         linkMapper.insertLink(link);
         return link.getShortCode();
+    }
+
+    @Override
+    public List<LinkResponse> getUserLinks(Long userId) {
+        List<Link> links = linkMapper.selectLinksByUserId(userId);
+        return links.stream()
+                .map(LinkConverter::convertFromLink)
+                .toList();
     }
 }
