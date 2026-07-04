@@ -3,7 +3,7 @@ import { ElMessage } from 'element-plus'
 import type { Result } from '../types'
 
 const request: AxiosInstance = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
+    baseURL: '/',  // 始终使用相对路径
     timeout: 10000
 })
 
